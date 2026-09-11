@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Runtime state and authentication
+data/
+logs/
+.wwebjs_cache/
+.wwebjs_auth/
+.wwebjs_cache/
+test-results/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# Test/build output
+coverage/
+*.log
+*.tmp
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
