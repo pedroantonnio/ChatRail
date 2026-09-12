@@ -88,6 +88,46 @@ codex mcp list
 
 The MCP bridge talks to the local ChatRail HTTP API. It does not create another WhatsApp client.
 
+### First-time setup
+
+Run these steps once:
+
+~~~powershell
+chatrail init
+chatrail start
+~~~
+
+On the first WhatsApp connection, complete the QR pairing if ChatRail asks for it. Keep that terminal running while ChatRail is in use.
+
+Then register the MCP bridge with Codex:
+
+~~~powershell
+codex mcp add chatrail -- npx -y @pedroantonnio/chatrail-mcp
+~~~
+
+You only need to register the MCP server once.
+
+### Everyday use
+
+After the initial setup, the normal workflow is:
+
+~~~text
+1. Start ChatRail with: chatrail start
+2. Leave that terminal running.
+3. Open Codex.
+4. Ask Codex to use ChatRail for the WhatsApp task you want.
+~~~
+
+You do not need to start chatrail-mcp yourself. Codex launches the MCP bridge automatically when it needs it.
+
+The ChatRail daemon does need to be running because the MCP bridge connects to its local HTTP API at http://127.0.0.1:3333 by default.
+
+You can confirm the daemon is available before opening Codex with:
+
+~~~powershell
+chatrail status
+~~~
+
 Once registered, you can ask Codex things such as:
 
 ~~~text
