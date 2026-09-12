@@ -40,8 +40,31 @@ jobs:
       - name: Check package contents
         run: npm run pack:check
 
+      - name: Check published versions
+        id: versions
+        shell: bash
+        run: |
+          ROOT_VERSION="$(node -p "require('./package.json').version")"
+          MCP_VERSION="$(node -p "require('./packages/chatrail-mcp/package.json').version")"
+
+          if npm view "@pedroantonnio/chatrail@$ROOT_VERSION" version >/dev/null 2>&1; then
+            echo "publish_root=false" >> "$GITHUB_OUTPUT"
+            echo "@pedroantonnio/chatrail@$ROOT_VERSION is already published"
+          else
+            echo "publish_root=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          if npm view "@pedroantonnio/chatrail-mcp@$MCP_VERSION" version >/dev/null 2>&1; then
+            echo "publish_mcp=false" >> "$GITHUB_OUTPUT"
+            echo "@pedroantonnio/chatrail-mcp@$MCP_VERSION is already published"
+          else
+            echo "publish_mcp=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish ChatRail
+        if: steps.versions.outputs.publish_root == 'true'
         run: npm publish --access public
 
       - name: Publish ChatRail MCP
+        if: steps.versions.outputs.publish_mcp == 'true'
         run: npm publish --workspace @pedroantonnio/chatrail-mcp --access public
