@@ -1,6 +1,6 @@
 {
   "name": "@pedroantonnio/chatrail",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "Local WhatsApp gateway with HTTP and MCP interfaces for apps, automations, and AI tools",
   "bin": {
