@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseBoolean } from './normalize.js'
@@ -20,16 +21,55 @@ function parseEnvFile(text) {
   return result
 }
 
+export const PROJECT_ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
+
+export function defaultChatRailHome() {
+  return path.join(os.homedir(), '.chatrail')
+}
+
+function isChatRailProject(cwd) {
+  const packageFile = path.join(cwd, 'package.json')
+  if (!fs.existsSync(packageFile)) return false
+
+  try {
+    const pkg = JSON.parse(fs.readFileSync(packageFile, 'utf8'))
+    return pkg.name === 'chatrail' || pkg.name === '@pedroantonnio/chatrail'
+  } catch {
+    return false
+  }
+}
+
+export function resolveRuntimeHome({
+  cwd = process.cwd(),
+  env = process.env
+} = {}) {
+  if (env.CHATRAIL_HOME) {
+    return path.resolve(String(env.CHATRAIL_HOME))
+  }
+
+  const localEnv = path.join(cwd, '.env')
+  if (fs.existsSync(localEnv) && isChatRailProject(cwd)) {
+    return cwd
+  }
+
+  return defaultChatRailHome()
+}
+
 export function loadEnvFile(cwd = process.cwd()) {
   const envPath = path.join(cwd, '.env')
   if (!fs.existsSync(envPath)) return {}
   return parseEnvFile(fs.readFileSync(envPath, 'utf8'))
 }
 
-export function loadConfig({ cwd = process.cwd(), overrides = {} } = {}) {
-  const fileEnv = loadEnvFile(cwd)
+export function loadConfig({
+  cwd = process.cwd(),
+  home,
+  overrides = {}
+} = {}) {
+  const runtimeHome = home || resolveRuntimeHome({ cwd })
+  const fileEnv = loadEnvFile(runtimeHome)
   const env = { ...fileEnv, ...process.env, ...overrides }
-  const dataDir = path.resolve(cwd, env.DATA_DIR || './data')
+  const dataDir = path.resolve(runtimeHome, env.DATA_DIR || './data')
 
   return {
     host: env.HOST || '127.0.0.1',
@@ -43,7 +83,8 @@ export function loadConfig({ cwd = process.cwd(), overrides = {} } = {}) {
     apiToken: env.API_TOKEN || '',
     headless: parseBoolean(env.HEADLESS, true),
     logLevel: env.LOG_LEVEL || 'info',
-    cwd
+    cwd: runtimeHome,
+    runtimeHome
   }
 }
 
@@ -60,8 +101,6 @@ export function parseCliArgs(argv = process.argv.slice(2)) {
   }
   return out
 }
-
-export const PROJECT_ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
 
 export function assertSafeConfig(config) {
   if (!Number.isInteger(config.port) || config.port < 0 || config.port > 65535) {
