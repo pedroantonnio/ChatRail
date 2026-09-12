@@ -1,12 +1,39 @@
 #!/usr/bin/env node
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { ChatRailApiClient } from './api-client.js'
-import { loadEnvFile, resolveRuntimeHome } from './config.js'
-import { createChatRailMcpServer } from './mcp/server.js'
+import { createChatRailMcpServer } from './server.js'
 
-const runtimeHome = resolveRuntimeHome()
+function parseEnvFile(text) {
+  const result = {}
+  for (const rawLine of text.split(/\r?\n/)) {
+    const line = rawLine.trim()
+    if (!line || line.startsWith('#')) continue
+    const idx = line.indexOf('=')
+    if (idx < 0) continue
+    const key = line.slice(0, idx).trim()
+    let value = line.slice(idx + 1).trim()
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1)
+    }
+    result[key] = value
+  }
+  return result
+}
+
+function loadEnvFile(dir) {
+  const file = path.join(dir, '.env')
+  if (!fs.existsSync(file)) return {}
+  return parseEnvFile(fs.readFileSync(file, 'utf8'))
+}
+
+const runtimeHome = process.env.CHATRAIL_HOME
+  ? path.resolve(process.env.CHATRAIL_HOME)
+  : path.join(os.homedir(), '.chatrail')
+
 const fileEnv = loadEnvFile(runtimeHome)
-
 const host = fileEnv.HOST || '127.0.0.1'
 const port = fileEnv.PORT || '3333'
 

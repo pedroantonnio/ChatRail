@@ -1,15 +1,36 @@
 {
-  "name": "chatrail",
+  "name": "@pedroantonnio/chatrail",
   "version": "1.0.0",
-  "private": true,
   "type": "module",
   "description": "Local WhatsApp gateway with HTTP and MCP interfaces for apps, automations, and AI tools",
+  "bin": {
+    "chatrail": "src/cli.js"
+  },
+  "files": [
+    "src/",
+    "scripts/",
+    ".env.example",
+    "API.md",
+    "ARCHITECTURE.md",
+    "CHANGELOG.md",
+    "KNOWN_UPSTREAM_LIMITATIONS.md",
+    "MCP.md",
+    "NOTICE.md",
+    "SECURITY.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "workspaces": [
+    "packages/chatrail-mcp"
+  ],
   "engines": {
     "node": ">=20.0.0"
   },
   "scripts": {
     "start": "node src/cli.js",
-    "start:fake": "node src/cli.js --provider=fake",
+    "start:fake": "node src/cli.js start --provider=fake",
+    "init": "node src/cli.js init",
+    "status": "node src/cli.js status",
     "test": "node --test --test-reporter=spec test/*.test.js",
     "test:regression": "node --test --test-reporter=spec test/*.test.js",
     "test:syntax": "node scripts/syntax-check.js",
@@ -20,7 +41,8 @@
     "stress": "node scripts/stress.js",
     "mcp": "node src/mcp-cli.js",
     "test:mcp": "node --test --test-reporter=spec test/mcp.test.js",
-    "verify:mcp": "npm run test:mcp"
+    "verify:mcp": "npm run test:mcp",
+    "pack:check": "npm pack --dry-run && npm pack --workspace @pedroantonnio/chatrail-mcp --dry-run"
   },
   "dependencies": {
     "@hapi/boom": "10.0.1",
@@ -38,7 +60,8 @@
     "automation",
     "self-hosted",
     "whatsapp-web-js",
-    "baileys"
+    "baileys",
+    "codex"
   ],
   "license": "MIT",
   "repository": {
@@ -48,5 +71,8 @@
   "bugs": {
     "url": "https://github.com/pedroantonnio/ChatRail/issues"
   },
-  "homepage": "https://github.com/pedroantonnio/ChatRail#readme"
+  "homepage": "https://github.com/pedroantonnio/ChatRail#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }

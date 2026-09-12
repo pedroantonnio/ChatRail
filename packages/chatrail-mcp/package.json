@@ -1,0 +1,41 @@
+{
+  "name": "@pedroantonnio/chatrail-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for the ChatRail WhatsApp gateway",
+  "type": "module",
+  "bin": {
+    "chatrail-mcp": "src/cli.js"
+  },
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "zod": "3.25.76"
+  },
+  "keywords": [
+    "chatrail",
+    "whatsapp",
+    "mcp",
+    "model-context-protocol",
+    "codex"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pedroantonnio/ChatRail.git",
+    "directory": "packages/chatrail-mcp"
+  },
+  "homepage": "https://github.com/pedroantonnio/ChatRail#readme",
+  "bugs": {
+    "url": "https://github.com/pedroantonnio/ChatRail/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
